@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Race to COE — Race Day</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Space+Grotesk:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --turf:#1F3D2B;
+    --turf-dark:#142A1D;
+    --parchment:#F3ECD9;
+    --parchment-dim:#E8DFC6;
+    --brass:#C9A24B;
+    --brass-bright:#E0BE6E;
+    --silk-red:#8C2F39;
+    --rail:#EDE6D6;
+    --ink:#1B1B16;
+    --ink-soft:#4A4436;
+    --dirt:#5B3F2C;
+    --dirt-light:#6B4A34;
+    --good:#3E7D5A;
+    --sunset-1:#FF7A45;
+    --sunset-2:#FFB347;
+    --sunset-3:#FFE28A;
+    --agave:#2C7A6B;
+    --coral:#E85D5D;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at top, #24462F 0%, var(--turf) 45%, var(--turf-dark) 100%);
+    color:var(--parchment);
+    font-family:'Space Grotesk', sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  ::selection{ background:var(--brass); color:var(--turf-dark); }
+
+  /* ---------- HEADER ---------- */
+  header{
+    padding:34px 20px 18px;
+    text-align:center;
+    position:relative;
+  }
+  header::before, header::after{
+    content:"";
+    position:absolute;
+    top:0; bottom:0;
+    width:1px;
+    background:linear-gradient(var(--brass), transparent);
+    opacity:.35;
+  }
+  .eyebrow{
+    font-family:'Roboto Mono', monospace;
+    letter-spacing:.32em;
+    font-size:11px;
+    color:var(--brass-bright);
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:clamp(32px, 6vw, 56px);
+    margin:0;
+    letter-spacing:-0.01em;
+    color:var(--rail);
+  }
+  h1 em{
+    font-style:italic;
+    color:var(--brass-bright);
+  }
+  .subtitle{
+    font-size:14px;
+    color:var(--parchment-dim);
+    opacity:.8;
+    margin-top:8px;
+    font-family:'Roboto Mono', monospace;
+  }
+
+  /* ---------- PRIZE BANNER ---------- */
+  .prize-banner{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    margin:20px auto 0;
+    padding:10px 22px;
+    background:linear-gradient(90deg, var(--sunset-1), var(--coral));
+    border-radius:999px;
+    box-shadow:0 8px 22px rgba(232,93,93,.35);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:13.5px;
+    color:#fff;
+    letter-spacing:.02em;
+    animation:pulseGlow 2.6s ease-in-out infinite;
+  }
+  .prize-banner .plane{ display:inline-block; animation:fly 2.4s ease-in-out infinite; }
+  @keyframes fly{
+    0%,100%{ transform:translateX(0) translateY(0) rotate(0deg); }
+    50%{ transform:translateX(3px) translateY(-2px) rotate(6deg); }
+  }
+  @keyframes pulseGlow{
+    0%,100%{ box-shadow:0 8px 22px rgba(232,93,93,.35); }
+    50%{ box-shadow:0 8px 30px rgba(255,179,71,.55); }
+  }
+
+  /* ---------- TABS ---------- */
+  .tabs{
+    display:flex;
+    justify-content:center;
+    gap:2px;
+    margin:26px auto 0;
+    max-width:640px;
+    border:1px solid rgba(201,162,75,.4);
+    border-radius:999px;
+    padding:4px;
+    background:rgba(0,0,0,.18);
+  }
+  .tab-btn{
+    flex:1;
+    padding:11px 18px;
+    background:transparent;
+    border:none;
+    border-radius:999px;
+    color:var(--parchment-dim);
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    cursor:pointer;
+    transition:all .2s ease;
+    letter-spacing:.02em;
+  }
+  .tab-btn.active{
+    background:var(--brass);
+    color:var(--turf-dark);
+  }
+  .tab-btn:not(.active):hover{ color:var(--rail); }
+
+  main{ max-width:980px; margin:0 auto; padding:30px 18px 0; }
+  .view{ display:none; animation:fadein .35s ease; }
+  .view.active{ display:block; }
+  @keyframes fadein{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- TRACK / LANES (shared) ---------- */
+  .track-card{
+    background:var(--parchment);
+    border-radius:16px;
+    padding:26px 22px 18px;
+    box-shadow:0 18px 40px rgba(0,0,0,.35);
+  }
+  .track-card h2{
+    font-family:'Fraunces', serif;
+    color:var(--ink);
+    font-size:20px;
+    margin:0 0 4px;
+  }
+  .track-sub{
+    font-size:12.5px; color:var(--ink-soft); margin-bottom:20px;
+    font-family:'Roboto Mono', monospace;
+  }
+
+  .lanes-scroll{
+    max-height: calc(100vh - 420px);
+    min-height: 340px;
+    overflow-y:auto;
+    padding:16px 6px 4px 0;
+    margin:-16px -6px 0 0;
+  }
+  .lanes-scroll::-webkit-scrollbar{ width:8px; }
+  .lanes-scroll::-webkit-scrollbar-track{ background:rgba(27,27,22,.06); border-radius:8px; }
+  .lanes-scroll::-webkit-scrollbar-thumb{ background:var(--brass); border-radius:8px; }
+
+  /* ---------- BIG LANES (Top 10 view) ---------- */
+  .top10-scroll{
+    max-height: calc(100vh - 300px);
+    min-height: 380px;
+    overflow-y:auto;
+    padding-right:6px;
+    margin-right:-6px;
+  }
+  .top10-scroll::-webkit-scrollbar{ width:8px; }
+  .top10-scroll::-webkit-scrollbar-track{ background:rgba(27,27,22,.06); border-radius:8px; }
+  .top10-scroll::-webkit-scrollbar-thumb{ background:var(--brass); border-radius:8px; }
+
+  .big-lane{
+    display:flex;
+    align-items:stretch;
+    height:min(13vh, 108px);
+    min-height:82px;
+    margin-bottom:10px;
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 4px 10px rgba(0,0,0,.18);
+  }
+  .lane-info-panel{
+    flex:0 0 auto;
+    width:clamp(120px, 24%, 200px);
+    background:var(--turf-dark);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:4px;
+    padding:10px 14px;
+    position:relative;
+  }
+  .lane-info-panel .rank-badge{
+    display:inline-block;
+    background:rgba(255,255,255,.1);
+    color:var(--brass-bright);
+    font-family:'Roboto Mono', monospace;
+    font-weight:700;
+    font-size:10.5px;
+    padding:2px 6px;
+    border-radius:5px;
+    width:fit-content;
+    margin-bottom:2px;
+  }
+  .lane-info-panel .chip-name{
+    display:block;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:clamp(12px, 1.9vh, 15px);
+    color:var(--brass-bright);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .lane-info-panel .chip-stat{
+    font-family:'Roboto Mono', monospace;
+    font-size:clamp(10px, 1.5vh, 12px);
+    color:#fff;
+    opacity:.9;
+  }
+  .lane-info-panel .chip-stat.hit{ color:#8FE0AE; font-weight:700; }
+
+  .lane-track-panel{
+    position:relative;
+    flex:1;
+    min-width:0;
+    background:
+      repeating-linear-gradient(95deg, rgba(255,255,255,.10) 0 3px, transparent 3px 22px),
+      linear-gradient(180deg, #3FAE5C 0%, #2F9148 55%, #227639 100%);
+    overflow:hidden;
+  }
+  .big-lane .big-furlong{
+    position:absolute; top:6px; bottom:6px; width:1px;
+    background:rgba(255,255,255,.25);
+    z-index:1;
+  }
+  .big-runner{
+    position:absolute; bottom:8px;
+    transform:translateX(-50%);
+    transition:left 1.1s cubic-bezier(.34,1.3,.4,1);
+    z-index:2;
+  }
+  .big-runner svg{
+    width:min(15vh, 120px); height:calc(min(15vh, 120px) * 0.842);
+    animation:gallopBig 0.5s infinite steps(4);
+    filter:drop-shadow(0 3px 3px rgba(0,0,0,.45));
+  }
+  @keyframes gallopBig{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-3px); }
+  }
+  .big-runner.finished svg{ animation:none; }
+
+  .finish-scene-big{
+    position:absolute; right:0; top:0; bottom:0; width:34%;
+    min-width:100px; max-width:170px;
+    display:flex; flex-direction:column;
+    z-index:1;
+  }
+  .finish-scene-big .band-sky{
+    flex:1.1;
+    background:linear-gradient(180deg,#FF9A56,#FFB347);
+    display:flex; align-items:center; justify-content:center;
+    padding:4px;
+  }
+  .finish-scene-big .coe-ribbon{
+    background:linear-gradient(90deg, var(--coral), var(--sunset-1));
+    color:#fff;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:800;
+    font-size:clamp(9px, 1.5vh, 13px);
+    padding:5px 10px;
+    border-radius:8px;
+    box-shadow:0 3px 8px rgba(0,0,0,.25);
+    white-space:nowrap;
+  }
+  .finish-scene-big .band-water{
+    flex:0.9;
+    background:#2EA6AE;
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,.4) 0 8px, transparent 8px 24px);
+  }
+  .finish-scene-big .band-sand{
+    flex:1.2;
+    background:#EFCF9A;
+    display:flex; align-items:flex-end; justify-content:center;
+    gap:4%;
+    padding-bottom:4px;
+  }
+  .finish-scene-big .band-sand span{ font-size:clamp(16px, 3.2vh, 26px); line-height:1; }
+
+  @media (max-width:640px){
+    .lane-info-panel{ width:clamp(96px, 32%, 150px); padding:8px 10px; }
+    .finish-scene-big{ width:38%; min-width:80px; }
+  }
+
+  /* ---------- COMPACT LANES (Everyone view) ---------- */
+  .lane-row{
+    display:grid;
+    grid-template-columns: 26px minmax(90px, 170px) 1fr auto;
+    align-items:center;
+    gap:8px;
+    height:40px;
+    margin-bottom:5px;
+    border-radius:7px;
+    padding:0 8px 0 4px;
+    background:rgba(46,145,72,.07);
+  }
+  .lane-row:nth-child(even){ background:rgba(46,145,72,.13); }
+  .lane-row .gate-num{
+    font-family:'Roboto Mono', monospace;
+    font-size:10px; font-weight:700;
+    color:var(--ink-soft);
+    text-align:center;
+  }
+  .lane-row .lane-name{
+    font-size:12.5px; font-weight:600; color:var(--ink);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .track-bar{
+    position:relative;
+    height:26px;
+    border-radius:8px;
+    background:
+      repeating-linear-gradient(95deg, rgba(255,255,255,.10) 0 3px, transparent 3px 22px),
+      linear-gradient(180deg, #3FAE5C 0%, #2F9148 55%, #227639 100%);
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,.15);
+    overflow:visible;
+  }
+  .track-bar .furlong{
+    position:absolute; top:3px; bottom:3px; width:1px;
+    background:rgba(255,255,255,.3);
+  }
+  .finish-tick{
+    position:absolute; right:0; top:-4px; bottom:-4px; width:6px;
+    background-image: repeating-linear-gradient(180deg, #fff 0 5px, #1B1B16 5px 10px);
+    border-radius:2px;
+    box-shadow:0 0 0 2px rgba(0,0,0,.35), 0 0 10px 2px rgba(255,255,255,.5);
+    z-index:1;
+  }
+  .finish-post{
+    position:absolute; right:6px; bottom:2px; width:2px; height:24px;
+    background:var(--brass-bright);
+    z-index:1;
+  }
+  .finish-pennant{
+    position:absolute; right:6px; bottom:19px;
+    background:linear-gradient(90deg, #6e1f27, var(--silk-red));
+    color:#fff;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:800;
+    font-size:8.5px;
+    letter-spacing:.01em;
+    padding:3px 6px 3px 5px;
+    border-radius:3px 0 0 3px;
+    white-space:nowrap;
+    box-shadow:0 2px 4px rgba(0,0,0,.35);
+    z-index:2;
+  }
+  .ara-marker{
+    position:absolute; bottom:2px; width:2px; height:15px;
+    background:#2D6FE0;
+    transform:translateX(-50%);
+    z-index:1;
+  }
+  .ara-flag{
+    position:absolute; bottom:14px;
+    transform:translateX(-50%);
+    background:linear-gradient(90deg, #1B4FA0, #2D6FE0);
+    color:#fff;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:800;
+    font-size:7px;
+    letter-spacing:.01em;
+    padding:2px 5px;
+    border-radius:3px;
+    white-space:nowrap;
+    box-shadow:0 2px 4px rgba(0,0,0,.3);
+    z-index:1;
+  }
+  .runner-mini{
+    position:absolute; top:50%;
+    transform:translate(-50%,-50%);
+    transition:left 1.1s cubic-bezier(.34,1.3,.4,1);
+    z-index:2;
+  }
+  .runner-mini svg{
+    width:42px; height:35px;
+    animation:gallopMini 0.5s infinite steps(4);
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.45));
+  }
+  @keyframes gallopMini{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-2px); }
+  }
+  .runner-mini.finished svg{ animation:none; }
+  .runner-mini.finished::after{
+    content:"🌴";
+    position:absolute; top:-15px; left:50%; transform:translateX(-50%);
+    font-size:13px;
+  }
+  .lane-stat{
+    font-family:'Roboto Mono', monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    white-space:nowrap;
+    text-align:right;
+    min-width:88px;
+  }
+  .lane-stat.hit{ color:var(--good); font-weight:700; }
+
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-soft);
+  }
+  .empty-state .big{ font-family:'Fraunces', serif; font-size:22px; color:var(--ink); margin-bottom:8px; }
+  .empty-state button{ margin-top:16px; }
+
+  /* ---------- PASSCODE GATE ---------- */
+  .gate-card{
+    background:var(--parchment);
+    border-radius:16px;
+    padding:44px 30px;
+    text-align:center;
+    max-width:380px;
+    margin:0 auto;
+    box-shadow:0 18px 40px rgba(0,0,0,.35);
+    color:var(--ink);
+  }
+  .gate-icon{ font-size:34px; margin-bottom:6px; }
+  .gate-card h2{ font-family:'Fraunces', serif; margin:0 0 6px; font-size:20px; }
+  .gate-input-row{
+    display:flex; gap:8px; margin-top:18px;
+  }
+  .gate-input-row input{
+    flex:1;
+    border:1px solid rgba(27,27,22,.2);
+    border-radius:9px;
+    padding:11px 14px;
+    font-family:'Roboto Mono', monospace;
+    font-size:16px;
+    letter-spacing:.15em;
+    text-align:center;
+    background:#fff;
+    color:var(--ink);
+  }
+  .gate-input-row input:focus{ outline:2px solid var(--brass); border-color:transparent; }
+  .gate-error{
+    color:var(--silk-red);
+    font-size:12.5px;
+    margin-top:10px;
+    font-weight:600;
+    display:none;
+  }
+  .gate-error.show{ display:block; }
+
+  /* ---------- FINISHERS CLUB ---------- */
+  .finishers-scene{
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 10px 24px rgba(0,0,0,.2);
+  }
+  .fin-sky{
+    background:linear-gradient(180deg, #FF9A56, #FFC876);
+    padding:26px 20px 20px;
+    text-align:center;
+  }
+  .fin-banner{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:clamp(20px, 3.4vw, 30px);
+    color:#fff;
+    text-shadow:0 3px 10px rgba(0,0,0,.25);
+  }
+  .fin-water{
+    height:16px;
+    background:#2EA6AE;
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,.4) 0 10px, transparent 10px 28px);
+  }
+  .fin-sand{
+    background:#EFCF9A;
+    min-height:200px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-end;
+    justify-content:center;
+    gap:22px;
+    padding:26px 20px;
+  }
+  .fin-horse-card{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    position:relative;
+    padding-top:4px;
+  }
+  .fin-horse-img{
+    position:relative;
+    width:76px;
+    height:64px;
+  }
+  .fin-horse-img .sunglasses{
+    position:absolute; left:55px; top:13px;
+    transform:translate(-50%,-50%) rotate(-6deg);
+    font-size:15px;
+    line-height:1;
+    z-index:2;
+  }
+  .fin-horse-img .cocktail{
+    position:absolute; left:66px; top:24px;
+    transform:translate(-50%,-50%) rotate(8deg);
+    font-size:17px;
+    line-height:1;
+    z-index:2;
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,.3));
+  }
+  .fin-horse-img svg{
+    width:76px;
+    filter:drop-shadow(0 3px 3px rgba(0,0,0,.3));
+    animation:finBob 2.2s ease-in-out infinite;
+  }
+  @keyframes finBob{
+    0%,100%{ transform:translateY(0); }
+    50%{ transform:translateY(-3px); }
+  }
+  .fin-horse-name{
+    background:var(--turf-dark);
+    color:var(--brass-bright);
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:11.5px;
+    padding:4px 11px;
+    border-radius:999px;
+    white-space:nowrap;
+    max-width:110px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .fin-empty{
+    width:100%;
+    text-align:center;
+    color:#7a5a34;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    line-height:1.6;
+    padding:20px 10px;
+  }
+
+  /* ---------- EDIT / TRACK OFFICE ---------- */
+  .office-card{
+    background:var(--parchment);
+    border-radius:16px;
+    padding:26px 22px;
+    box-shadow:0 18px 40px rgba(0,0,0,.35);
+    color:var(--ink);
+  }
+  .office-card h2{ font-family:'Fraunces', serif; margin:0 0 4px; font-size:20px; }
+  .office-sub{ font-size:13px; color:var(--ink-soft); margin-bottom:22px; }
+
+  table.entries{ width:100%; border-collapse:collapse; }
+  table.entries th{
+    text-align:left;
+    font-family:'Roboto Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    padding:0 8px 8px;
+    border-bottom:2px solid rgba(27,27,22,.15);
+  }
+  table.entries td{
+    padding:8px;
+    border-bottom:1px solid rgba(27,27,22,.08);
+    vertical-align:middle;
+  }
+  table.entries input[type=text], table.entries input[type=number]{
+    width:100%;
+    border:1px solid rgba(27,27,22,.2);
+    border-radius:7px;
+    padding:8px 9px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:13.5px;
+    background:#fff;
+    color:var(--ink);
+  }
+  table.entries input:focus{ outline:2px solid var(--brass); border-color:transparent; }
+  .swatch{
+    width:22px; height:22px; border-radius:50%;
+    border:2px solid rgba(27,27,22,.25);
+    display:inline-block;
+  }
+  .scratch-btn{
+    background:none; border:none; cursor:pointer;
+    color:var(--silk-red); font-size:18px; line-height:1;
+    padding:6px;
+  }
+  .scratch-btn:hover{ opacity:.7; }
+
+  .office-actions{
+    display:flex; flex-wrap:wrap; gap:10px; margin-top:20px;
+  }
+  button{ font-family:'Space Grotesk',sans-serif; cursor:pointer; }
+  .btn{
+    border:none; border-radius:999px; padding:11px 20px;
+    font-weight:600; font-size:13.5px; letter-spacing:.01em;
+    transition:transform .12s ease, opacity .12s ease;
+  }
+  .btn:active{ transform:scale(.97); }
+  .btn-primary{ background:var(--silk-red); color:#fff; }
+  .btn-brass{ background:var(--brass); color:var(--turf-dark); }
+  .btn-ghost{ background:transparent; color:var(--ink); border:1.5px solid rgba(27,27,22,.3); }
+  .btn-ghost:hover{ background:rgba(27,27,22,.06); }
+  input[type=file]{ display:none; }
+
+  .save-flash{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'Roboto Mono', monospace; font-size:12.5px;
+    color:var(--good); opacity:0; transition:opacity .3s ease;
+    margin-left:4px;
+  }
+  .save-flash.show{ opacity:1; }
+
+  footer{
+    text-align:center; padding:30px 20px 10px;
+    font-family:'Roboto Mono', monospace;
+    font-size:11px; color:rgba(243,236,217,.35);
+  }
+
+  @media (max-width:640px){
+    .tab-btn{ padding:9px 8px; font-size:11.5px; }
+    table.entries thead{ display:none; }
+    table.entries, table.entries tbody, table.entries tr, table.entries td{ display:block; width:100%; }
+    table.entries tr{ margin-bottom:14px; border:1px solid rgba(27,27,22,.12); border-radius:10px; padding:10px; }
+    table.entries td{ border:none; padding:5px 2px; }
+    table.entries td::before{
+      content:attr(data-label);
+      display:block; font-family:'Roboto Mono',monospace; font-size:10px;
+      text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft); margin-bottom:3px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Goal Tracker · GCI to COE</div>
+  <h1>Race to <em>COE</em></h1>
+  <div class="subtitle" id="dateLine">Race Day</div>
+  <div class="prize-banner"><span class="plane">✈️</span> Everyone who hits COE wins a FREE all-inclusive trip to Mexico <span class="plane">🍹</span></div>
+  <div class="tabs">
+    <button class="tab-btn active" data-view="race">🏆 Top 10</button>
+    <button class="tab-btn" data-view="finishers">🎉 COE Vacationers</button>
+    <button class="tab-btn" data-view="everyone">🐎 Everyone</button>
+    <button class="tab-btn" data-view="office">🖋 Track Office</button>
+  </div>
+</header>
+
+<main>
+  <!-- TOP 10 RACE VIEW -->
+  <section class="view active" id="view-race">
+    <div class="track-card">
+      <h2>Race to COE</h2>
+      <div class="track-sub" id="trackSub">Top 10 closest to COE — first past this post books the trip</div>
+      <div class="top10-scroll"><div id="lanesTop10"></div></div>
+    </div>
+  </section>
+
+  <!-- FINISHERS VIEW -->
+  <section class="view" id="view-finishers">
+    <div class="track-card">
+      <h2>🎉 COE Vacationers</h2>
+      <div class="track-sub" id="finishersSub">Everyone who's hit COE</div>
+      <div class="finishers-scene">
+        <div class="fin-sky">
+          <div class="fin-banner">Welcome to Mexico! 🇲🇽</div>
+        </div>
+        <div class="fin-water"></div>
+        <div class="fin-sand" id="finishersSand"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVERYONE VIEW (passcode gated) -->
+  <section class="view" id="view-everyone">
+    <div class="gate-card" id="everyoneGate">
+      <div class="gate-icon">🔒</div>
+      <h2>Full Field is locked</h2>
+      <div class="office-sub">Enter the passcode to view the full standings.</div>
+      <div class="gate-input-row">
+        <input type="password" id="gatePinEveryone" inputmode="numeric" maxlength="8" placeholder="Passcode">
+        <button class="btn btn-brass" id="gateSubmitEveryone">Unlock</button>
+      </div>
+      <div class="gate-error" id="gateErrorEveryone">Incorrect passcode — try again.</div>
+    </div>
+
+    <div class="track-card" id="everyoneContent" style="display:none;">
+      <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+        <h2>Full Field</h2>
+        <button class="btn btn-ghost" id="lockBtnEveryone" style="padding:6px 12px; font-size:12px;">🔒 Lock</button>
+      </div>
+      <div class="track-sub" id="everyoneSub">Every horse, ranked by % to COE</div>
+      <div class="lanes-scroll"><div id="lanesEveryone"></div></div>
+    </div>
+  </section>
+
+  <!-- EDIT VIEW (passcode gated) -->
+  <section class="view" id="view-office">
+    <div class="gate-card" id="officeGate">
+      <div class="gate-icon">🔒</div>
+      <h2>Track Office is locked</h2>
+      <div class="office-sub">Enter the passcode to view or edit agent data.</div>
+      <div class="gate-input-row">
+        <input type="password" id="gatePinOffice" inputmode="numeric" maxlength="8" placeholder="Passcode">
+        <button class="btn btn-brass" id="gateSubmitOffice">Unlock</button>
+      </div>
+      <div class="gate-error" id="gateErrorOffice">Incorrect passcode — try again.</div>
+    </div>
+
+    <div class="office-card" id="officeContent" style="display:none;">
+      <h2>Track Office</h2>
+      <div class="office-sub">Enter each agent's YTD GCI and their COE goal. Positions on the race track update automatically.</div>
+      <table class="entries">
+        <thead>
+          <tr>
+            <th style="width:34px">#</th>
+            <th style="width:30px"></th>
+            <th>Agent</th>
+            <th>YTD GCI ($)</th>
+            <th>COE Goal ($)</th>
+            <th style="width:36px"></th>
+          </tr>
+        </thead>
+        <tbody id="entryRows"></tbody>
+      </table>
+      <div class="office-actions">
+        <button class="btn btn-brass" id="addRowBtn">+ Enter New Horse</button>
+        <button class="btn btn-primary" id="saveBtn">Save Now</button>
+        <span class="save-flash" id="saveFlash">✓ Saved</span>
+        <button class="btn btn-ghost" id="exportBtn">Export backup</button>
+        <button class="btn btn-ghost" id="importBtn">Import backup</button>
+        <input type="file" id="importFile" accept="application/json">
+        <button class="btn btn-ghost" id="lockBtnOffice">🔒 Lock protected tabs</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>Race to COE — race positions recalculate the moment you save</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  const SILKS = ["#E0393E","#F2A93B","#2E9E5B","#2D6FE0","#8E4FD1","#00A8A8"];
+  const STORE_KEY = "roadToCOE:agents";
+
+  let agents = [];
+
+  // ---------- storage layer (works as Claude artifact + standalone GitHub Pages) ----------
+  async function loadAgents(){
+    try{
+      if (window.storage){
+        const res = await window.storage.get(STORE_KEY);
+        if (res && res.value) return JSON.parse(res.value);
+        return null;
+      }
+    }catch(e){ /* key not found or storage unavailable */ }
+    try{
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) return JSON.parse(raw);
+    }catch(e){}
+    return null;
+  }
+
+  async function persistAgents(){
+    const json = JSON.stringify(agents);
+    try{
+      if (window.storage){
+        await window.storage.set(STORE_KEY, json);
+        return;
+      }
+    }catch(e){}
+    try{ localStorage.setItem(STORE_KEY, json); }catch(e){}
+  }
+
+  function sampleData(){
+    return [
+      { id: cryptoId(), name: "Jordan Blake", ytd: 42000, goal: 100000, color: SILKS[0] },
+      { id: cryptoId(), name: "Sam Rivera", ytd: 78500, goal: 100000, color: SILKS[1] },
+      { id: cryptoId(), name: "Casey Nguyen", ytd: 21000, goal: 80000, color: SILKS[2] },
+    ];
+  }
+
+  function cryptoId(){
+    return 'a' + Math.random().toString(36).slice(2, 10);
+  }
+
+  function fmtMoney(n){
+    n = Number(n) || 0;
+    return "$" + n.toLocaleString("en-US", {maximumFractionDigits:0});
+  }
+
+  function fmtMoneyShort(n){
+    n = Number(n) || 0;
+    if (n >= 1000){
+      return "$" + (n/1000).toLocaleString("en-US", {maximumFractionDigits:1}) + "k";
+    }
+    return "$" + n.toLocaleString("en-US", {maximumFractionDigits:0});
+  }
+
+  function pctOf(a){
+    if (!a.goal || a.goal <= 0) return 0;
+    return Math.max(0, Math.min(100, (a.ytd / a.goal) * 100));
+  }
+
+  // ---------- tabs ----------
+  document.querySelectorAll(".tab-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("view-" + btn.dataset.view).classList.add("active");
+      if (btn.dataset.view === "race") renderTop10();
+      if (btn.dataset.view === "everyone") updateGate("everyone");
+      if (btn.dataset.view === "finishers") renderFinishers();
+      if (btn.dataset.view === "office") updateGate("office");
+    });
+  });
+
+  // ---------- racehorse svg (no rider) — traced directly from the horse emoji reference, colored saddle blanket per agent ----------
+  function horseSVG(color){
+    return `
+      <svg viewBox="-9 -2 590 497" xmlns="http://www.w3.org/2000/svg">
+      <path d="M 1.0,106.0 C 7.0,90.5 22.2,78.2 37.0,68.0 C 51.8,57.8 78.2,55.0 90.0,45.0 C 101.8,35.0 105.3,7.0 108.0,8.0 C 110.7,9.0 116.2,30.2 106.0,51.0 C 95.8,71.8 57.0,110.2 47.0,133.0 C 37.0,155.8 32.3,182.5 46.0,188.0 C 59.7,193.5 82.5,169.8 129.0,166.0 C 175.5,162.2 291.8,172.0 325.0,165.0 C 358.2,158.0 320.2,131.5 328.0,124.0 C 335.8,116.5 360.0,126.0 372.0,120.0 C 384.0,114.0 381.5,96.5 400.0,88.0 C 418.5,79.5 467.7,74.8 483.0,69.0 C 498.3,63.2 477.3,37.8 492.0,53.0 C 506.7,68.2 557.8,138.0 571.0,160.0 C 584.2,182.0 575.5,179.5 571.0,185.0 C 566.5,190.5 553.5,196.0 544.0,193.0 C 534.5,190.0 526.5,172.8 514.0,167.0 C 501.5,161.2 487.3,142.2 469.0,158.0 C 450.7,173.8 416.3,235.7 404.0,262.0 C 391.7,288.3 390.0,301.0 395.0,316.0 C 400.0,331.0 424.0,338.2 434.0,352.0 C 444.0,365.8 454.3,383.8 455.0,399.0 C 455.7,414.2 443.0,435.7 438.0,443.0 C 433.0,450.3 425.5,451.3 425.0,443.0 C 424.5,434.7 437.5,407.8 435.0,393.0 C 432.5,378.2 416.7,360.5 410.0,354.0 C 403.3,347.5 397.5,347.8 395.0,354.0 C 392.5,360.2 401.0,378.2 395.0,391.0 C 389.0,403.8 374.3,422.5 359.0,431.0 C 343.7,439.5 311.8,444.8 303.0,442.0 C 294.2,439.2 299.7,417.3 306.0,414.0 C 312.3,410.7 329.3,428.7 341.0,422.0 C 352.7,415.3 378.0,387.2 376.0,374.0 C 374.0,360.8 359.7,353.8 329.0,343.0 C 298.3,332.2 215.7,304.2 192.0,309.0 C 168.3,313.8 177.0,357.0 187.0,372.0 C 197.0,387.0 239.3,389.8 252.0,399.0 C 264.7,408.2 276.2,429.2 263.0,427.0 C 249.8,424.8 192.2,397.3 173.0,386.0 C 153.8,374.7 153.5,355.5 148.0,359.0 C 142.5,362.5 132.2,390.8 140.0,407.0 C 147.8,423.2 185.7,443.0 195.0,456.0 C 204.3,469.0 209.7,492.7 196.0,485.0 C 182.3,477.3 126.3,435.3 113.0,410.0 C 99.7,384.7 124.2,356.2 116.0,333.0 C 107.8,309.8 74.7,291.2 64.0,271.0 C 53.3,250.8 62.5,230.3 52.0,212.0 C 41.5,193.7 9.5,178.7 1.0,161.0 C -7.5,143.3 -5.0,121.5 1.0,106.0 Z" fill="#816140"/>
+      <path d="M 55.0,234.0 C 47.7,224.8 60.2,267.7 73.0,281.0 C 85.8,294.3 116.2,311.7 132.0,314.0 C 147.8,316.3 164.0,308.7 168.0,295.0 C 172.0,281.3 133.3,234.5 156.0,232.0 C 178.7,229.5 278.8,275.5 304.0,280.0 C 329.2,284.5 301.0,249.2 307.0,259.0 C 313.0,268.8 330.2,326.0 340.0,339.0 C 349.8,352.0 361.0,345.5 366.0,337.0 C 371.0,328.5 366.3,294.7 370.0,288.0 C 373.7,281.3 382.5,300.3 388.0,297.0 C 393.5,293.7 402.7,264.3 403.0,268.0 C 403.3,271.7 381.3,297.2 390.0,319.0 C 398.7,340.8 446.5,379.0 455.0,399.0 C 463.5,419.0 446.0,431.7 441.0,439.0 C 436.0,446.3 427.3,453.5 425.0,443.0 C 422.7,432.5 433.5,392.3 427.0,376.0 C 420.5,359.7 390.8,344.2 386.0,345.0 C 381.2,345.8 399.0,370.2 398.0,381.0 C 397.0,391.8 395.8,399.8 380.0,410.0 C 364.2,420.2 315.3,441.3 303.0,442.0 C 290.7,442.7 299.7,417.3 306.0,414.0 C 312.3,410.7 328.7,428.2 341.0,422.0 C 353.3,415.8 404.7,396.7 380.0,377.0 C 355.3,357.3 225.7,305.7 193.0,304.0 C 160.3,302.3 174.2,351.2 184.0,367.0 C 193.8,382.8 238.8,389.0 252.0,399.0 C 265.2,409.0 280.0,434.5 263.0,427.0 C 246.0,419.5 170.5,357.3 150.0,354.0 C 129.5,350.7 132.5,390.0 140.0,407.0 C 147.5,424.0 185.7,443.0 195.0,456.0 C 204.3,469.0 209.7,492.7 196.0,485.0 C 182.3,477.3 126.2,434.8 113.0,410.0 C 99.8,385.2 126.7,365.3 117.0,336.0 C 107.3,306.7 62.3,243.2 55.0,234.0 Z" fill="#3F2616"/><path d="M 108.0,8.0 C 109.7,10.5 113.3,15.8 113.0,23.0 C 112.7,30.2 115.2,36.0 106.0,51.0 C 96.8,66.0 68.2,98.3 58.0,113.0 C 47.8,127.7 47.8,128.0 45.0,139.0 C 42.2,150.0 39.5,170.0 41.0,179.0 C 42.5,188.0 52.5,187.8 54.0,193.0 C 55.5,198.2 53.7,208.7 50.0,210.0 C 46.3,211.3 38.2,206.7 32.0,201.0 C 25.8,195.3 18.2,184.8 13.0,176.0 C 7.8,167.2 3.0,157.7 1.0,148.0 C -1.0,138.3 -2.0,128.5 1.0,118.0 C 4.0,107.5 13.8,92.7 19.0,85.0 C 24.2,77.3 25.0,77.0 32.0,72.0 C 39.0,67.0 51.0,59.5 61.0,55.0 C 71.0,50.5 85.3,49.0 92.0,45.0 C 98.7,41.0 99.2,37.2 101.0,31.0 C 102.8,24.8 101.8,11.8 103.0,8.0 C 104.2,4.2 106.3,5.5 108.0,8.0 Z" fill="#3F2616"/><path d="M 508.0,82.0 C 510.8,88.8 510.8,92.2 509.0,94.0 C 507.2,95.8 500.2,94.8 497.0,93.0 C 493.8,91.2 494.5,84.0 490.0,83.0 C 485.5,82.0 483.2,77.7 470.0,87.0 C 456.8,96.3 427.0,126.3 411.0,139.0 C 395.0,151.7 384.5,159.2 374.0,163.0 C 363.5,166.8 356.3,164.2 348.0,162.0 C 339.7,159.8 328.0,152.7 324.0,150.0 C 320.0,147.3 321.0,146.5 324.0,146.0 C 327.0,145.5 337.2,147.7 342.0,147.0 C 346.8,146.3 351.3,143.7 353.0,142.0 C 354.7,140.3 355.2,138.3 352.0,137.0 C 348.8,135.7 338.0,136.2 334.0,134.0 C 330.0,131.8 325.5,125.3 328.0,124.0 C 330.5,122.7 341.7,126.7 349.0,126.0 C 356.3,125.3 363.2,124.5 372.0,120.0 C 380.8,115.5 397.3,104.3 402.0,99.0 C 406.7,93.7 397.3,90.0 400.0,88.0 C 402.7,86.0 411.3,89.8 418.0,87.0 C 424.7,84.2 433.8,74.3 440.0,71.0 C 446.2,67.7 448.2,67.2 455.0,67.0 C 461.8,66.8 474.8,72.3 481.0,70.0 C 487.2,67.7 487.5,51.0 492.0,53.0 C 496.5,55.0 505.2,75.2 508.0,82.0 Z" fill="#3F2616"/><path d="M 512.0,96.0 C 520.5,105.0 556.0,146.5 565.0,161.0 C 574.0,175.5 569.5,177.7 566.0,183.0 C 562.5,188.3 552.2,195.5 544.0,193.0 C 535.8,190.5 529.3,174.7 517.0,168.0 C 504.7,161.3 481.3,147.5 470.0,153.0 C 458.7,158.5 457.2,186.7 449.0,201.0 C 440.8,215.3 419.8,242.8 421.0,239.0 C 422.2,235.2 449.2,198.0 456.0,178.0 C 462.8,158.0 458.0,123.0 462.0,119.0 C 466.0,115.0 472.8,147.0 480.0,154.0 C 487.2,161.0 498.5,160.7 505.0,161.0 C 511.5,161.3 515.2,154.5 519.0,156.0 C 522.8,157.5 521.7,168.2 528.0,170.0 C 534.3,171.8 553.0,170.5 557.0,167.0 C 561.0,163.5 557.3,157.5 552.0,149.0 C 546.7,140.5 532.2,120.8 525.0,116.0 C 517.8,111.2 513.3,120.2 509.0,120.0 C 504.7,119.8 500.5,117.0 499.0,115.0 C 497.5,113.0 497.5,109.3 500.0,108.0 C 502.5,106.7 512.0,109.0 514.0,107.0 C 516.0,105.0 503.5,87.0 512.0,96.0 Z" fill="#3F2616"/>
+      <rect x="158" y="165" width="176" height="115" rx="10" fill="${color}"/>
+      <circle cx="419" cy="97" r="6" fill="#1B1310"/>
+      </svg>
+    `;
+  }
+
+  // ---------- shared: agents ranked by % to goal ----------
+  function sortedAgents(){
+    return [...agents].sort((a,b)=> pctOf(b) - pctOf(a));
+  }
+
+  function emptyStateHTML(){
+    return `<div class="empty-state">
+        <div class="big">The gate is empty</div>
+        <div>Add agents in Track Office to see them hit the track.</div>
+        <button class="btn btn-brass" id="emptyAddBtn">+ Enter New Horse</button>
+      </div>`;
+  }
+  function wireEmptyState(){
+    const btn = document.getElementById("emptyAddBtn");
+    if (btn) btn.addEventListener("click", ()=>{
+      document.querySelector('.tab-btn[data-view="office"]').click();
+    });
+  }
+
+  // ---------- render: TOP 10 (big lanes, vacation finish scene) ----------
+  function renderTop10(){
+    const lanesEl = document.getElementById("lanesTop10");
+    const sub = document.getElementById("trackSub");
+    const stillRacing = agents.filter(a => pctOf(a) < 100);
+    if (!agents.length){
+      lanesEl.innerHTML = emptyStateHTML();
+      wireEmptyState();
+      sub.textContent = "No entries yet";
+      return;
+    }
+    if (!stillRacing.length){
+      lanesEl.innerHTML = `<div class="empty-state">
+          <div class="big">Everyone's made it! 🎉</div>
+          <div>Every agent has hit COE — check the Vacationers tab.</div>
+        </div>`;
+      sub.textContent = "0 still racing";
+      return;
+    }
+    const top10 = [...stillRacing].sort((a,b)=> pctOf(b) - pctOf(a)).slice(0, 10);
+    sub.textContent = `Top ${top10.length} closest to COE — first past this post books the trip`;
+
+    lanesEl.innerHTML = top10.map((a, idx)=>{
+      const pct = pctOf(a);
+      const finished = pct >= 100;
+      const gap = Math.max(0, a.goal - a.ytd);
+      const leftPct = Math.min(pct, 100) * 0.62; // leave room for the resort finish scene
+      const statText = finished ? "🌴 COE hit!" : `${fmtMoneyShort(gap)} to go · ${pct.toFixed(0)}%`;
+      return `
+        <div class="big-lane">
+          <div class="lane-info-panel">
+            <span class="rank-badge">#${idx+1}</span>
+            <span class="chip-name" title="${escapeAttr(a.name || "Unnamed")}">${escapeHtml(a.name || "Unnamed")}</span>
+            <span class="chip-stat ${finished ? "hit" : ""}">${statText}</span>
+          </div>
+          <div class="lane-track-panel">
+            <div class="big-furlong" style="left:25%"></div>
+            <div class="big-furlong" style="left:50%"></div>
+            <div class="big-furlong" style="left:75%"></div>
+            <div class="finish-scene-big">
+              <div class="band-sky"><div class="coe-ribbon">COE Trip!</div></div>
+              <div class="band-water"></div>
+              <div class="band-sand"><span>🏖️</span><span>🌴</span></div>
+            </div>
+            <div class="big-runner ${finished ? "finished" : ""}" style="left:${leftPct}%">
+              ${horseSVG(a.color)}
+            </div>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  // ---------- render: EVERYONE (compact rows, all agents, ranked) ----------
+  function renderEveryone(){
+    const lanesEl = document.getElementById("lanesEveryone");
+    const sub = document.getElementById("everyoneSub");
+    if (!agents.length){
+      lanesEl.innerHTML = emptyStateHTML();
+      wireEmptyState();
+      sub.textContent = "No entries yet";
+      return;
+    }
+    const ranked = sortedAgents();
+    sub.textContent = `${ranked.length} horse${ranked.length===1?"":"s"} — ranked by % to COE`;
+
+    lanesEl.innerHTML = ranked.map((a, idx)=>{
+      const pct = pctOf(a);
+      const finished = pct >= 100;
+      const gap = Math.max(0, a.goal - a.ytd);
+      const leftPct = Math.min(pct, 88);
+      const araPct = a.goal > 0 ? Math.min(100, (250000 / a.goal) * 100) : null;
+      const statText = finished
+        ? "🌴 COE hit!"
+        : `${fmtMoneyShort(gap)} to go · ${pct.toFixed(0)}%`;
+      return `
+        <div class="lane-row">
+          <span class="gate-num">#${idx+1}</span>
+          <span class="lane-name" title="${escapeAttr(a.name || "Unnamed")}">${escapeHtml(a.name || "Unnamed")}</span>
+          <div class="track-bar">
+            <div class="furlong" style="left:25%"></div>
+            <div class="furlong" style="left:50%"></div>
+            <div class="furlong" style="left:75%"></div>
+            ${araPct !== null ? `
+              <div class="ara-marker" style="left:${araPct}%"></div>
+              <div class="ara-flag" style="left:${araPct}%">ARA!</div>
+            ` : ""}
+            <div class="finish-tick"></div>
+            <div class="finish-post"></div>
+            <div class="finish-pennant">COE!</div>
+            <div class="runner-mini ${finished ? "finished" : ""}" style="left:${leftPct}%">
+              ${horseSVG(a.color)}
+            </div>
+          </div>
+          <span class="lane-stat ${finished ? "hit" : ""}">${statText}</span>
+        </div>`;
+    }).join("");
+  }
+
+  // ---------- render: FINISHERS CLUB (everyone who's hit COE) ----------
+  function renderFinishers(){
+    const sand = document.getElementById("finishersSand");
+    const sub = document.getElementById("finishersSub");
+    const finishers = agents
+      .filter(a => pctOf(a) >= 100)
+      .sort((a,b) => (a.name || "").localeCompare(b.name || ""));
+
+    if (!finishers.length){
+      sub.textContent = "Nobody's hit COE yet — be the first!";
+      sand.innerHTML = `<div class="fin-empty">🏖️ This beach is empty for now.<br>Hit COE and your horse gets a spot right here.</div>`;
+      return;
+    }
+
+    sub.textContent = `${finishers.length} agent${finishers.length===1?"":"s"} made it to Mexico! 🎉`;
+    sand.innerHTML = finishers.map(a => `
+      <div class="fin-horse-card">
+        <div class="fin-horse-img">
+          ${horseSVG(a.color)}
+          <span class="sunglasses">🕶️</span>
+          <span class="cocktail">🍹</span>
+        </div>
+        <span class="fin-horse-name" title="${escapeAttr(a.name || "Unnamed")}">${escapeHtml(a.name || "Unnamed")}</span>
+      </div>
+    `).join("");
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, s => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[s]));
+  }
+
+  // ---------- render: edit table ----------
+  function renderEntries(){
+    const rows = document.getElementById("entryRows");
+    rows.innerHTML = agents.map((a, i)=>`
+      <tr data-id="${a.id}">
+        <td data-label="#">${i+1}</td>
+        <td data-label="Silk"><span class="swatch" style="background:${a.color}"></span></td>
+        <td data-label="Agent"><input type="text" class="f-name" value="${escapeAttr(a.name)}" placeholder="Agent name"></td>
+        <td data-label="YTD GCI ($)"><input type="number" class="f-ytd" min="0" step="100" value="${a.ytd}"></td>
+        <td data-label="COE Goal ($)"><input type="number" class="f-goal" min="0" step="100" value="${a.goal}"></td>
+        <td data-label=""><button class="scratch-btn" title="Scratch this horse">✕</button></td>
+      </tr>
+    `).join("");
+
+    rows.querySelectorAll("tr").forEach(tr=>{
+      const id = tr.dataset.id;
+      tr.querySelector(".f-name").addEventListener("input", e=> updateAgent(id, "name", e.target.value));
+      tr.querySelector(".f-ytd").addEventListener("input", e=> updateAgent(id, "ytd", Number(e.target.value)||0));
+      tr.querySelector(".f-goal").addEventListener("input", e=> updateAgent(id, "goal", Number(e.target.value)||0));
+      tr.querySelector(".scratch-btn").addEventListener("click", ()=>{
+        agents = agents.filter(a=>a.id !== id);
+        renderEntries();
+        scheduleSave();
+      });
+    });
+  }
+
+  function escapeAttr(str){ return escapeHtml(str || ""); }
+
+  function updateAgent(id, field, value){
+    const a = agents.find(a=>a.id===id);
+    if (a){ a[field] = value; scheduleSave(); }
+  }
+
+  let saveTimer = null;
+  function scheduleSave(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(()=>{ persistAgents(); }, 500);
+  }
+
+  // ---------- buttons ----------
+  document.getElementById("addRowBtn").addEventListener("click", ()=>{
+    agents.push({ id: cryptoId(), name: "", ytd: 0, goal: 100000, color: SILKS[agents.length % SILKS.length] });
+    renderEntries();
+    scheduleSave();
+  });
+
+  document.getElementById("saveBtn").addEventListener("click", async ()=>{
+    await persistAgents();
+    const flash = document.getElementById("saveFlash");
+    flash.classList.add("show");
+    setTimeout(()=>flash.classList.remove("show"), 1600);
+    renderTop10();
+    renderEveryone();
+    renderFinishers();
+  });
+
+  document.getElementById("exportBtn").addEventListener("click", ()=>{
+    const blob = new Blob([JSON.stringify(agents, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "road-to-coe-backup.json";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById("importBtn").addEventListener("click", ()=>{
+    document.getElementById("importFile").click();
+  });
+  document.getElementById("importFile").addEventListener("change", (e)=>{
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      try{
+        const data = JSON.parse(ev.target.result);
+        if (Array.isArray(data)){
+          agents = data.map((a, i)=>({
+            id: a.id || cryptoId(),
+            name: a.name || "",
+            ytd: Number(a.ytd)||0,
+            goal: Number(a.goal)||0,
+            color: a.color || SILKS[i % SILKS.length]
+          }));
+          renderEntries();
+          renderTop10();
+          renderEveryone();
+          renderFinishers();
+          persistAgents();
+        }
+      }catch(err){
+        alert("That file couldn't be read as a valid backup.");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  });
+
+  // ---------- date line ----------
+  document.getElementById("dateLine").textContent = new Date().toLocaleDateString("en-US", { weekday:"long", year:"numeric", month:"long", day:"numeric" });
+
+  // ---------- passcode gate (protects Track Office + Everyone, shared pin/unlock) ----------
+  const RESTRICTED_PIN = "2011";
+  let restrictedUnlocked = false;
+  try{ restrictedUnlocked = sessionStorage.getItem("restrictedUnlocked") === "true"; }catch(e){}
+
+  const GATES = {
+    office: { gate: "officeGate", content: "officeContent", pin: "gatePinOffice", submit: "gateSubmitOffice", error: "gateErrorOffice", onUnlock: renderEntries },
+    everyone: { gate: "everyoneGate", content: "everyoneContent", pin: "gatePinEveryone", submit: "gateSubmitEveryone", error: "gateErrorEveryone", onUnlock: renderEveryone }
+  };
+
+  function updateGate(key){
+    const cfg = GATES[key];
+    const gate = document.getElementById(cfg.gate);
+    const content = document.getElementById(cfg.content);
+    if (restrictedUnlocked){
+      gate.style.display = "none";
+      content.style.display = "block";
+      cfg.onUnlock();
+    } else {
+      gate.style.display = "block";
+      content.style.display = "none";
+      document.getElementById(cfg.pin).value = "";
+      document.getElementById(cfg.error).classList.remove("show");
+      setTimeout(()=> document.getElementById(cfg.pin).focus(), 50);
+    }
+  }
+
+  function updateAllGates(){
+    Object.keys(GATES).forEach(updateGate);
+  }
+
+  function tryUnlock(key){
+    const cfg = GATES[key];
+    const val = document.getElementById(cfg.pin).value.trim();
+    if (val === RESTRICTED_PIN){
+      restrictedUnlocked = true;
+      try{ sessionStorage.setItem("restrictedUnlocked", "true"); }catch(e){}
+      updateAllGates();
+    } else {
+      document.getElementById(cfg.error).classList.add("show");
+      document.getElementById(cfg.pin).value = "";
+      document.getElementById(cfg.pin).focus();
+    }
+  }
+
+  function lockAll(){
+    restrictedUnlocked = false;
+    try{ sessionStorage.removeItem("restrictedUnlocked"); }catch(e){}
+    updateAllGates();
+  }
+
+  Object.keys(GATES).forEach(key=>{
+    const cfg = GATES[key];
+    document.getElementById(cfg.submit).addEventListener("click", ()=> tryUnlock(key));
+    document.getElementById(cfg.pin).addEventListener("keydown", (e)=>{
+      if (e.key === "Enter") tryUnlock(key);
+    });
+  });
+  document.getElementById("lockBtnOffice").addEventListener("click", lockAll);
+  document.getElementById("lockBtnEveryone").addEventListener("click", lockAll);
+
+  // ---------- init ----------
+  (async function init(){
+    const loaded = await loadAgents();
+    agents = loaded && loaded.length ? loaded : sampleData();
+    renderTop10();
+    renderFinishers();
+    if (restrictedUnlocked){ renderEveryone(); }
+    if (!loaded){ persistAgents(); }
+  })();
+
+})();
+</script>
+</body>
+</html>
